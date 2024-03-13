@@ -45,7 +45,7 @@ func (c CloneServer) RemoveMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err := c.logic.GoodUpdate(context.Background(), entry)
+	list, err := c.logic.RemoveMovies(context.Background(), entry)
 	if err != nil {
 		fmt.Fprintln(w, err)
 		return
@@ -62,7 +62,7 @@ func (c CloneServer) RemoveActors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err := c.logic.GoodRemove(context.Background(), entry)
+	list, err := c.logic.RemoveActors(context.Background(), entry)
 	if err != nil {
 		fmt.Fprintln(w, err)
 		return
