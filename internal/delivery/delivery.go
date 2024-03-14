@@ -59,6 +59,25 @@ func (c CloneServer) FindActors(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(list)
 }
 
+func (c CloneServer) FindMovies(w http.ResponseWriter, r *http.Request) {
+	entry, err := getParam(r)
+	if err != nil {
+		log.Warn().Err(err).Msg("error reading parameters")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	list, err := c.logic.FindMovies(context.Background(), entry)
+	if err != nil {
+		log.Warn().Err(err).Msg("error executing c.logic.FindMovies")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(list)
+}
+
 func (c CloneServer) RemoveMovies(w http.ResponseWriter, r *http.Request) {
 	entry, err := getParam(r)
 	if err != nil {

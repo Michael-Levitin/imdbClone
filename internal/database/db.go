@@ -43,6 +43,13 @@ WHERE a.name ILIKE @actor
     AND removed = false
 ORDER BY a.name;
 `
+	_findMovieQuery = `
+SELECT m.movie
+FROM movies m
+WHERE m.movie ILIKE @movie
+  AND removed = false
+ORDER BY m.movie;
+`
 )
 
 type CloneDB struct {
@@ -72,9 +79,9 @@ func (c CloneDB) FindPartsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List
 
 func (c CloneDB) FindActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
 	rows, err := c.db.Query(ctx, _findActorQuery,
-		pgx.NamedArgs{"movie": entry.Movie, "actor": entry.Actor})
+		pgx.NamedArgs{"actor": entry.Actor})
 	if err != nil {
-		log.Debug().Err(err).Msg(fmt.Sprintf("FindPartsDB could not get list %+v", entry))
+		log.Debug().Err(err).Msg(fmt.Sprintf("FindActorsDB could not get list %+v", entry))
 		return &[]dto.Actor{}, err
 	}
 
@@ -82,6 +89,23 @@ func (c CloneDB) FindActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Act
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
 		return &[]dto.Actor{}, err
+	}
+
+	return &list, nil
+}
+
+func (c CloneDB) FindMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
+	rows, err := c.db.Query(ctx, _findMovieQuery,
+		pgx.NamedArgs{"movie": entry.Movie})
+	if err != nil {
+		log.Debug().Err(err).Msg(fmt.Sprintf("FindMoviesDB could not get list %+v", entry))
+		return &[]dto.Movie{}, err
+	}
+
+	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Movie])
+	if err != nil {
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		return &[]dto.Movie{}, err
 	}
 
 	return &list, nil
