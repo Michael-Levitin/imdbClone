@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS actors;
 CREATE TABLE movies
 (
     id          serial primary key,
-    movie       varchar(150) not null,
+    movie       varchar(150) not null UNIQUE,
     description varchar(1000),
     release     timestamp,
     rating      float,
@@ -25,7 +25,7 @@ comment on column movies.created_at is 'дата создания записи';
 CREATE TABLE actors
 (
     id         serial primary key,
-    name       varchar(60) not null,
+    name       varchar(60) not null UNIQUE,
     dob        timestamp,
     removed    bool,
     created_at timestamp
