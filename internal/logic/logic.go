@@ -18,26 +18,26 @@ func NewImdbCloneLogic(CloneDB *database.CloneDB) *CloneLogic {
 	return &CloneLogic{CloneDB: CloneDB}
 }
 
-func (c CloneLogic) FindMoviesActors(ctx context.Context, entry *dto.Entry) (*[]dto.List, error) {
+func (c CloneLogic) FindParts(ctx context.Context, entry *dto.Entry) (*[]dto.List, error) {
 	log.Trace().Msg(fmt.Sprintf("Logic recieved %+v\n", entry))
-	if len(entry.Actor) < 3 && len(entry.Movie) < 3 {
+	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
 		return &[]dto.List{}, fmt.Errorf("query too short")
 	}
-	return c.CloneDB.FindMoviesActorsDB(ctx, entry)
+	return c.CloneDB.FindPartsDB(ctx, entry)
 }
 
-func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.List, error) {
+func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
 	log.Trace().Msg(fmt.Sprintf("Logic recieved %+v\n", entry))
-	if len(entry.Actor) < 3 && len(entry.Movie) < 3 {
-		return &[]dto.List{}, fmt.Errorf("query too short")
+	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
+		return &[]dto.Movie{}, fmt.Errorf("query too short")
 	}
 	return c.CloneDB.RemoveMoviesDB(ctx, entry)
 }
 
-func (c CloneLogic) RemoveActors(ctx context.Context, entry *dto.Entry) (*[]dto.List, error) {
+func (c CloneLogic) RemoveActors(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
 	log.Trace().Msg(fmt.Sprintf("Logic recieved %+v\n", entry))
-	if len(entry.Actor) < 3 && len(entry.Movie) < 3 {
-		return &[]dto.List{}, fmt.Errorf("query too short")
+	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
+		return &[]dto.Actor{}, fmt.Errorf("query too short")
 	}
 	return c.CloneDB.RemoveActorsDB(ctx, entry)
 }

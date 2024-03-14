@@ -19,7 +19,7 @@ func NewImdbCloneServer(logic logic.CloneLogicI) *CloneServer {
 	return &CloneServer{logic: logic}
 }
 
-func (c CloneServer) FindMoviesActors(w http.ResponseWriter, r *http.Request) {
+func (c CloneServer) FindParts(w http.ResponseWriter, r *http.Request) {
 	entry, err := getParam(r)
 	if err != nil {
 		log.Warn().Err(err).Msg("error reading parameters")
@@ -27,9 +27,9 @@ func (c CloneServer) FindMoviesActors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err := c.logic.FindMoviesActors(context.Background(), entry)
+	list, err := c.logic.FindParts(context.Background(), entry)
 	if err != nil {
-		log.Warn().Err(err).Msg("error executing c.logic.FindMoviesActors")
+		log.Warn().Err(err).Msg("error executing c.logic.FindParts")
 		fmt.Fprintln(w, err)
 		return
 	}
@@ -80,8 +80,8 @@ func getParam(r *http.Request) (*dto.Entry, error) {
 
 	queryParams := r.URL.Query()
 	entry := dto.Entry{
-		Actor: queryParams.Get("movie"),
-		Movie: queryParams.Get("actor"),
+		Actor: "%" + queryParams.Get("actor") + "%",
+		Movie: "%" + queryParams.Get("movie") + "%",
 	}
 
 	return &entry, nil

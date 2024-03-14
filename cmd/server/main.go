@@ -34,7 +34,7 @@ func main() {
 	cloneLogic := logic.NewImdbCloneLogic(cloneDB)         // подключаем бд к логике...
 	cloneServer := delivery.NewImdbCloneServer(cloneLogic) // ... а логику в delivery
 
-	http.HandleFunc("/findMoviesActors", cloneServer.FindMoviesActors)
+	http.HandleFunc("/findParts", cloneServer.FindParts)
 	http.HandleFunc("/removeMovies", cloneServer.RemoveMovies)
 	http.HandleFunc("/removeActors", cloneServer.RemoveActors)
 	log.Info().Msg("server is running...")

@@ -6,9 +6,3 @@ migrate:
 serverStart:
 	go run ../imdbClone/cmd/server/main.go
 
-clientCHStart:
-	go run ../imdbClone/cmd/clientCH/main.go
-
-clientHttpStart:
-	go run ../imdbClone/cmd/clientHttp/main.go
-
