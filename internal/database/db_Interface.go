@@ -7,7 +7,7 @@ import (
 )
 
 type CloneDbI interface {
-	FindMoviesActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List, error)
-	RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.List, error)
-	RemoveActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List, error)
+	FindPartsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List, error)
+	RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error)
+	RemoveActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error)
 }
