@@ -36,6 +36,13 @@ WHERE name ILIKE @actor
 	AND removed = false
 RETURNING name;
 `
+	_findActorQuery = `
+SELECT a.name
+FROM actors a
+WHERE a.name ILIKE @actor
+    AND removed = false
+ORDER BY a.name;
+`
 )
 
 type CloneDB struct {
@@ -58,6 +65,23 @@ func (c CloneDB) FindPartsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
 		return &[]dto.List{}, err
+	}
+
+	return &list, nil
+}
+
+func (c CloneDB) FindActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
+	rows, err := c.db.Query(ctx, _findActorQuery,
+		pgx.NamedArgs{"movie": entry.Movie, "actor": entry.Actor})
+	if err != nil {
+		log.Debug().Err(err).Msg(fmt.Sprintf("FindPartsDB could not get list %+v", entry))
+		return &[]dto.Actor{}, err
+	}
+
+	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Actor])
+	if err != nil {
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		return &[]dto.Actor{}, err
 	}
 
 	return &list, nil

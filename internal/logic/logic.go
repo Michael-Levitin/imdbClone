@@ -26,6 +26,14 @@ func (c CloneLogic) FindParts(ctx context.Context, entry *dto.Entry) (*[]dto.Lis
 	return c.CloneDB.FindPartsDB(ctx, entry)
 }
 
+func (c CloneLogic) FindActors(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
+	log.Debug().Msg(fmt.Sprintf("Logic: FindActors recieved %+v\n", entry))
+	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
+		return &[]dto.Actor{}, fmt.Errorf("query too short")
+	}
+	return c.CloneDB.FindActorsDB(ctx, entry)
+}
+
 func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
 	log.Debug().Msg(fmt.Sprintf("Logic: RemoveMovies recieved %+v\n", entry))
 	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
