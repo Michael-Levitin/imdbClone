@@ -59,13 +59,13 @@ func getLevel(key string, defaultVal string) zerolog.Level {
 
 	levelS := map[string]zerolog.Level{
 		"trace":    zerolog.TraceLevel,
+		"disabled": zerolog.DebugLevel,
 		"info":     zerolog.InfoLevel,
 		"warn":     zerolog.WarnLevel,
 		"error":    zerolog.ErrorLevel,
 		"fatal":    zerolog.FatalLevel,
 		"panic":    zerolog.PanicLevel,
 		"nolevel":  zerolog.NoLevel,
-		"disabled": zerolog.DebugLevel,
 	}
 
 	if level, exists := levelS[userLevel]; exists {

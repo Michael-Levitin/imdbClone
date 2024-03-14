@@ -56,7 +56,7 @@ func (c CloneDB) FindPartsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List
 
 	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.List])
 	if err != nil {
-		log.Debug().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
 		return &[]dto.List{}, err
 	}
 
@@ -73,7 +73,7 @@ func (c CloneDB) RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.M
 
 	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Movie])
 	if err != nil {
-		log.Debug().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
 		return &[]dto.Movie{}, err
 	}
 
@@ -90,7 +90,7 @@ func (c CloneDB) RemoveActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.A
 
 	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Actor])
 	if err != nil {
-		log.Debug().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
 		return &[]dto.Actor{}, err
 	}
 

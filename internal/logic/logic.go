@@ -19,7 +19,7 @@ func NewImdbCloneLogic(CloneDB *database.CloneDB) *CloneLogic {
 }
 
 func (c CloneLogic) FindParts(ctx context.Context, entry *dto.Entry) (*[]dto.List, error) {
-	log.Trace().Msg(fmt.Sprintf("Logic recieved %+v\n", entry))
+	log.Debug().Msg(fmt.Sprintf("Logic: FindParts recieved %+v\n", entry))
 	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
 		return &[]dto.List{}, fmt.Errorf("query too short")
 	}
@@ -27,7 +27,7 @@ func (c CloneLogic) FindParts(ctx context.Context, entry *dto.Entry) (*[]dto.Lis
 }
 
 func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
-	log.Trace().Msg(fmt.Sprintf("Logic recieved %+v\n", entry))
+	log.Debug().Msg(fmt.Sprintf("Logic: RemoveMovies recieved %+v\n", entry))
 	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
 		return &[]dto.Movie{}, fmt.Errorf("query too short")
 	}
@@ -35,7 +35,7 @@ func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.
 }
 
 func (c CloneLogic) RemoveActors(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
-	log.Trace().Msg(fmt.Sprintf("Logic recieved %+v\n", entry))
+	log.Debug().Msg(fmt.Sprintf("Logic: RemoveActors recieved %+v\n", entry))
 	if len(entry.Actor) < 5 && len(entry.Movie) < 5 {
 		return &[]dto.Actor{}, fmt.Errorf("query too short")
 	}
