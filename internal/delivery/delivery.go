@@ -15,6 +15,8 @@ type CloneServer struct {
 	logic logic.CloneLogicI
 }
 
+const minQuery = 5
+
 func NewImdbCloneServer(logic logic.CloneLogicI) *CloneServer {
 	return &CloneServer{logic: logic}
 }
@@ -101,6 +103,9 @@ func getParam(r *http.Request) (*dto.Entry, error) {
 	entry := dto.Entry{
 		Actor: "%" + queryParams.Get("actor") + "%",
 		Movie: "%" + queryParams.Get("movie") + "%",
+	}
+	if len(entry.Actor) < minQuery && len(entry.Movie) < minQuery {
+		return &dto.Entry{}, fmt.Errorf("query too short")
 	}
 
 	return &entry, nil
