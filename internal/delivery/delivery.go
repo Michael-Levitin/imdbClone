@@ -114,7 +114,25 @@ func (c CloneServer) AddMovie(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(id)
+}
 
+func (c CloneServer) AddParts(w http.ResponseWriter, r *http.Request) {
+	item, err := getForm(r)
+	if err != nil {
+		log.Warn().Err(err).Msg("error reading form")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	id, err := c.logic.AddMParts(context.Background(), item)
+	if err != nil {
+		log.Warn().Err(err).Msg("error executing c.logic.AddMParts")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(id)
 }
 
 func (c CloneServer) RemoveMovies(w http.ResponseWriter, r *http.Request) {

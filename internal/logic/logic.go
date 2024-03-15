@@ -33,14 +33,29 @@ func (c CloneLogic) FindMovies(ctx context.Context, entry *dto.Entry) (*[]dto.Mo
 	return c.CloneDB.FindMoviesDB(ctx, entry)
 }
 
-func (c CloneLogic) AddActors(ctx context.Context, actors *[]dto.Actor) (*[]dto.Id, error) {
+func (c CloneLogic) AddActors(ctx context.Context, actors *[]dto.Actor) ([]int, error) {
 	log.Debug().Msg(fmt.Sprintf("Logic: AddActors recieved %+v\n", actors))
 	return c.CloneDB.AddActorsDB(ctx, actors)
 }
 
-func (c CloneLogic) AddMovie(ctx context.Context, movie *dto.Movie) (*dto.Id, error) {
+func (c CloneLogic) AddMovie(ctx context.Context, movie *dto.Movie) (int, error) {
 	log.Debug().Msg(fmt.Sprintf("Logic: AddMovie recieved %+v\n", movie))
 	return c.CloneDB.AddMovieDB(ctx, movie)
+}
+
+func (c CloneLogic) AddMParts(ctx context.Context, imdb *dto.Imdb) (int, error) {
+	log.Debug().Msg(fmt.Sprintf("Logic: AddMParts recieved %+v\n", imdb))
+	idMovie, err := c.CloneDB.AddMovieDB(ctx, &imdb.Movie)
+	if err != nil {
+		return 0, err
+	}
+
+	idActors, err := c.CloneDB.AddActorsDB(ctx, &imdb.Actors)
+	if err != nil {
+		return 0, err
+	}
+
+	return c.CloneDB.AddPartsDB(ctx, idMovie, idActors)
 }
 
 func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {

@@ -72,6 +72,13 @@ ON CONFLICT(movie)
                   created_at  = excluded.created_at
 RETURNING id;
 `
+	_addPartsQuery = `
+INSERT INTO parts (movie_id, actor_id)
+SELECT m.movie_id, actor_id
+FROM (select @movie::int as movie_id) m
+         CROSS JOIN unnest(@actors::int[]) actor_id
+ON CONFLICT(movie_id, actor_id)
+    DO NOTHING;`
 )
 
 type CloneDB struct {
@@ -133,23 +140,28 @@ func (c CloneDB) FindMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Mov
 	return &list, nil
 }
 
-func (c CloneDB) AddActorsDB(ctx context.Context, actors *[]dto.Actor) (*[]dto.Id, error) {
+func (c CloneDB) AddActorsDB(ctx context.Context, actors *[]dto.Actor) ([]int, error) {
 	rows, err := c.db.Query(ctx, _addActorsQueryHead+dto.ActorsToString(actors)+_addActorsQueryTail)
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("AddActorsDB could not add actors"))
-		return &[]dto.Id{}, err
+		return []int{}, err
 	}
 
 	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Id])
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
-		return &[]dto.Id{}, err
+		return []int{}, err
 	}
 
-	return &list, nil
+	ids := make([]int, len(list))
+	for i, id := range list {
+		ids[i] = id.Id
+	}
+
+	return ids, nil
 }
 
-func (c CloneDB) AddMovieDB(ctx context.Context, movie *dto.Movie) (*dto.Id, error) {
+func (c CloneDB) AddMovieDB(ctx context.Context, movie *dto.Movie) (int, error) {
 	rows, err := c.db.Query(ctx, _addMovieQuery,
 		pgx.NamedArgs{"movie": movie.Movie,
 			"description": movie.Description,
@@ -161,16 +173,25 @@ func (c CloneDB) AddMovieDB(ctx context.Context, movie *dto.Movie) (*dto.Id, err
 
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("AddMovieDB could not add movie"))
-		return &dto.Id{}, err
+		return 0, err
 	}
 
 	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Id])
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
-		return &dto.Id{}, err
+		return 0, err
 	}
 
-	return &list[0], nil
+	return list[0].Id, nil
+}
+
+func (c CloneDB) AddPartsDB(ctx context.Context, movie int, actors []int) (int, error) {
+	cmd, err := c.db.Exec(ctx, _addPartsQuery, pgx.NamedArgs{"movie": movie, "actors": actors})
+	if err != nil {
+		log.Error().Err(err).Msg(fmt.Sprintf("AddPartsDB could not add parts"))
+		return 0, err
+	}
+	return int(cmd.RowsAffected()), nil
 }
 
 func (c CloneDB) RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
