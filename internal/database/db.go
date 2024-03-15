@@ -61,6 +61,17 @@ ON CONFLICT(name)
                   created_at = excluded.created_at
 RETURNING id;
 `
+	_addMovieQuery = `
+INSERT INTO movies (movie, description, release, rating, removed, created_at)
+VALUES (@movie, @description, @release, @rating, @removed, @created_at)
+ON CONFLICT(movie)
+    DO UPDATE SET description = excluded.description,
+                  release     = excluded.release,
+                  rating      = excluded.rating,
+                  removed     = excluded.removed,
+                  created_at  = excluded.created_at
+RETURNING id;
+`
 )
 
 type CloneDB struct {
@@ -136,6 +147,30 @@ func (c CloneDB) AddActorsDB(ctx context.Context, actors *[]dto.Actor) (*[]dto.I
 	}
 
 	return &list, nil
+}
+
+func (c CloneDB) AddMovieDB(ctx context.Context, movie *dto.Movie) (*dto.Id, error) {
+	rows, err := c.db.Query(ctx, _addMovieQuery,
+		pgx.NamedArgs{"movie": movie.Movie,
+			"description": movie.Description,
+			"release":     movie.Release,
+			"rating":      movie.Rating,
+			"removed":     movie.Removed,
+			"created_at":  movie.Created,
+		})
+
+	if err != nil {
+		log.Trace().Err(err).Msg(fmt.Sprintf("AddMovieDB could not add movie"))
+		return &dto.Id{}, err
+	}
+
+	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Id])
+	if err != nil {
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		return &dto.Id{}, err
+	}
+
+	return &list[0], nil
 }
 
 func (c CloneDB) RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {

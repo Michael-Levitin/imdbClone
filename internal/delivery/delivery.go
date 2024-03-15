@@ -95,6 +95,25 @@ func (c CloneServer) AddActors(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ids)
+}
+
+func (c CloneServer) AddMovie(w http.ResponseWriter, r *http.Request) {
+	item, err := getForm(r)
+	if err != nil {
+		log.Warn().Err(err).Msg("error reading form")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	id, err := c.logic.AddMovie(context.Background(), &item.Movie)
+	if err != nil {
+		log.Warn().Err(err).Msg("error executing c.logic.AddActors")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(id)
 
 }
 

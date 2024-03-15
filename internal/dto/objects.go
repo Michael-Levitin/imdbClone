@@ -20,12 +20,13 @@ type List struct {
 }
 
 type Movie struct {
-	Id      int       `json:"id" db:"id"`
-	Name    string    `json:"name" db:"name"`
-	Movie   string    `json:"movie" db:"movie"`
-	Release time.Time `json:"release" db:"release"`
-	Removed bool      `json:"removed" db:"removed"`
-	Created time.Time `json:"created_at" db:"created_at"`
+	Id          int       `json:"id" db:"id"`
+	Movie       string    `json:"movie" db:"movie"`
+	Description string    `json:"description" db:"description"`
+	Release     time.Time `json:"release" db:"release"`
+	Rating      float32   `json:"rating" db:"rating"`
+	Removed     bool      `json:"removed" db:"removed"`
+	Created     time.Time `json:"created_at" db:"created_at"`
 }
 
 type Actor struct {

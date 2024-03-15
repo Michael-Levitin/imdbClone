@@ -38,6 +38,11 @@ func (c CloneLogic) AddActors(ctx context.Context, actors *[]dto.Actor) (*[]dto.
 	return c.CloneDB.AddActorsDB(ctx, actors)
 }
 
+func (c CloneLogic) AddMovie(ctx context.Context, movie *dto.Movie) (*dto.Id, error) {
+	log.Debug().Msg(fmt.Sprintf("Logic: AddMovie recieved %+v\n", movie))
+	return c.CloneDB.AddMovieDB(ctx, movie)
+}
+
 func (c CloneLogic) RemoveMovies(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
 	log.Debug().Msg(fmt.Sprintf("Logic: RemoveMovies recieved %+v\n", entry))
 	return c.CloneDB.RemoveMoviesDB(ctx, entry)
