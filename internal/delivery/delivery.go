@@ -78,6 +78,26 @@ func (c CloneServer) FindMovies(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(list)
 }
 
+func (c CloneServer) AddActors(w http.ResponseWriter, r *http.Request) {
+	item, err := getForm(r)
+	if err != nil {
+		log.Warn().Err(err).Msg("error reading form")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	ids, err := c.logic.AddActors(context.Background(), &item.Actors)
+	if err != nil {
+		log.Warn().Err(err).Msg("error executing c.logic.AddActors")
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ids)
+
+}
+
 func (c CloneServer) RemoveMovies(w http.ResponseWriter, r *http.Request) {
 	entry, err := getParam(r)
 	if err != nil {
@@ -128,4 +148,16 @@ func getParam(r *http.Request) (*dto.Entry, error) {
 	}
 
 	return &entry, nil
+}
+
+func getForm(r *http.Request) (*dto.Imdb, error) {
+	if err := r.ParseForm(); err != nil {
+		return nil, fmt.Errorf("ParseForm() err: %v", err)
+	}
+	var item dto.Imdb
+	err := json.NewDecoder(r.Body).Decode(&item)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't parse request Body parameters, %s", err)
+	}
+	return &item, nil
 }

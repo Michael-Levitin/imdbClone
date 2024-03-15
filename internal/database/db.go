@@ -50,6 +50,17 @@ WHERE m.movie ILIKE @movie
   AND removed = false
 ORDER BY m.movie;
 `
+	_addActorsQueryHead = `
+INSERT INTO actors (name, dob, removed, created_at)
+VALUES
+`
+	_addActorsQueryTail = `
+ON CONFLICT(name)
+    DO UPDATE SET dob        = excluded.dob,
+                  removed    = excluded.removed,
+                  created_at = excluded.created_at
+RETURNING id;
+`
 )
 
 type CloneDB struct {
@@ -106,6 +117,22 @@ func (c CloneDB) FindMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Mov
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
 		return &[]dto.Movie{}, err
+	}
+
+	return &list, nil
+}
+
+func (c CloneDB) AddActorsDB(ctx context.Context, actors *[]dto.Actor) (*[]dto.Id, error) {
+	rows, err := c.db.Query(ctx, _addActorsQueryHead+dto.ActorsToString(actors)+_addActorsQueryTail)
+	if err != nil {
+		log.Trace().Err(err).Msg(fmt.Sprintf("AddActorsDB could not add actors"))
+		return &[]dto.Id{}, err
+	}
+
+	list, err := pgx.CollectRows(rows, pgx.RowToStructByName[dto.Id])
+	if err != nil {
+		log.Trace().Err(err).Msg(fmt.Sprintf("CollectRows error"))
+		return &[]dto.Id{}, err
 	}
 
 	return &list, nil
