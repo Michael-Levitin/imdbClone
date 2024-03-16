@@ -1,10 +1,13 @@
 package dto
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 )
+
+var ErrNoData = fmt.Errorf("not data")
 
 type Entry struct {
 	Actor string `json:"actor,omitempty"`
