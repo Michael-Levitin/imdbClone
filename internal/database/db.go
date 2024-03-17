@@ -90,6 +90,10 @@ func NewImdbCloneDB(db *pgxpool.Pool) *CloneDB {
 }
 
 func (c CloneDB) FindPartsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List, error) {
+	if entry == nil || (entry.Actor == "" && entry.Movie == "") {
+		return nil, dto.ErrNoData
+	}
+
 	rows, err := c.db.Query(ctx, _findPartsQuery,
 		pgx.NamedArgs{"movie": entry.Movie, "actor": entry.Actor})
 	if err != nil {
@@ -107,6 +111,10 @@ func (c CloneDB) FindPartsDB(ctx context.Context, entry *dto.Entry) (*[]dto.List
 }
 
 func (c CloneDB) FindActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
+	if entry == nil || entry.Actor == "" {
+		return nil, dto.ErrNoData
+	}
+
 	rows, err := c.db.Query(ctx, _findActorQuery,
 		pgx.NamedArgs{"actor": entry.Actor})
 	if err != nil {
@@ -124,6 +132,9 @@ func (c CloneDB) FindActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Act
 }
 
 func (c CloneDB) FindMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
+	if entry == nil || entry.Movie == "" {
+		return nil, dto.ErrNoData
+	}
 	rows, err := c.db.Query(ctx, _findMovieQuery,
 		pgx.NamedArgs{"movie": entry.Movie})
 	if err != nil {
@@ -141,6 +152,9 @@ func (c CloneDB) FindMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Mov
 }
 
 func (c CloneDB) AddActorsDB(ctx context.Context, actors *[]dto.Actor) ([]int, error) {
+	if actors == nil || len(*actors) == 0 {
+		return []int{}, dto.ErrNoData
+	}
 	rows, err := c.db.Query(ctx, _addActorsQueryHead+dto.ActorsToString(actors)+_addActorsQueryTail)
 	if err != nil {
 		log.Trace().Err(err).Msg(fmt.Sprintf("AddActorsDB could not add actors"))
@@ -162,6 +176,10 @@ func (c CloneDB) AddActorsDB(ctx context.Context, actors *[]dto.Actor) ([]int, e
 }
 
 func (c CloneDB) AddMovieDB(ctx context.Context, movie *dto.Movie) (int, error) {
+	if movie == nil || movie.Movie == "" {
+		return 0, dto.ErrNoData
+	}
+
 	rows, err := c.db.Query(ctx, _addMovieQuery,
 		pgx.NamedArgs{"movie": movie.Movie,
 			"description": movie.Description,
@@ -186,6 +204,10 @@ func (c CloneDB) AddMovieDB(ctx context.Context, movie *dto.Movie) (int, error) 
 }
 
 func (c CloneDB) AddPartsDB(ctx context.Context, movie int, actors []int) (int, error) {
+	if movie == 0 || len(actors) == 0 {
+		return 0, dto.ErrNoData
+	}
+
 	cmd, err := c.db.Exec(ctx, _addPartsQuery, pgx.NamedArgs{"movie": movie, "actors": actors})
 	if err != nil {
 		log.Error().Err(err).Msg(fmt.Sprintf("AddPartsDB could not add parts"))
@@ -195,6 +217,10 @@ func (c CloneDB) AddPartsDB(ctx context.Context, movie int, actors []int) (int, 
 }
 
 func (c CloneDB) RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.Movie, error) {
+	if entry == nil || entry.Movie == "" {
+		return nil, dto.ErrNoData
+	}
+
 	rows, err := c.db.Query(ctx, _removeMoviesQuery,
 		pgx.NamedArgs{"movie": entry.Movie})
 	if err != nil {
@@ -212,6 +238,10 @@ func (c CloneDB) RemoveMoviesDB(ctx context.Context, entry *dto.Entry) (*[]dto.M
 }
 
 func (c CloneDB) RemoveActorsDB(ctx context.Context, entry *dto.Entry) (*[]dto.Actor, error) {
+	if entry == nil || entry.Actor == "" {
+		return nil, dto.ErrNoData
+	}
+
 	rows, err := c.db.Query(ctx, _removeActorsQuery,
 		pgx.NamedArgs{"actor": entry.Actor})
 	if err != nil {
