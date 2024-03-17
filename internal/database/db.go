@@ -27,28 +27,28 @@ UPDATE movies
 SET removed = true
 WHERE movie ILIKE @movie
 	AND removed = false
-RETURNING movie;
+RETURNING id, movie, description, release, rating, removed, created_at;
 `
 	_removeActorsQuery = `
 UPDATE actors
 SET removed = true
 WHERE name ILIKE @actor
 	AND removed = false
-RETURNING name;
+RETURNING id, name, dob, removed, created_at;
 `
 	_findActorQuery = `
-SELECT a.name
-FROM actors a
-WHERE a.name ILIKE @actor
+SELECT id, name, dob, removed, created_at
+FROM actors
+WHERE name ILIKE @actor
     AND removed = false
-ORDER BY a.name;
+ORDER BY name;
 `
 	_findMovieQuery = `
-SELECT m.movie
+SELECT id, movie, description, release, rating, removed, created_at
 FROM movies m
-WHERE m.movie ILIKE @movie
+WHERE movie ILIKE @movie
   AND removed = false
-ORDER BY m.movie;
+ORDER BY movie;
 `
 	_addActorsQueryHead = `
 INSERT INTO actors (name, dob, removed, created_at)
