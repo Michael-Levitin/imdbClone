@@ -1,3 +1,4 @@
+# Запуск без докера
 .PHONY: migrate
 migrate:
 	psql -U postgres -d postgres -h localhost -a -f ./migrations/create_table.sql
@@ -6,3 +7,11 @@ migrate:
 serverStart:
 	go run ../imdbClone/cmd/server/main.go
 
+build:
+	docker-compose build
+
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
