@@ -1,0 +1,5 @@
+# Dockerfile для базы данных PostgreSQL с использованием Alpine
+FROM postgres:13-alpine
+
+# Копируем файлы миграции в контейнер
+COPY ./migrations /docker-entrypoint-initdb.d
